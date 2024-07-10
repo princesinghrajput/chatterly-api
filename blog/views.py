@@ -1,15 +1,27 @@
-from django.shortcuts import render
-from django.http import HttpResponse
+from rest_framework import viewsets, permissions
+from .models import Blog, Comment
+from .serializers import BlogSerializer, CommentSerializer
+
+class BlogViewSet(viewsets.ModelViewSet):
+    queryset= Blog.objects.all()
+    serializer_class= BlogSerializer
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly]
 
 
-# Create your views here.
-
-def home(request):
-    return HttpResponse("Hey there!, This is Home Page")
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
 
 
-def about(request):
-    return HttpResponse("Hey there!, This is About Page")
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset= Comment.objects.all()
+    serializer_class= CommentSerializer
+    permission_classes=[permissions.IsAuthenticatedOrReadOnly]
 
-def contact(request):
-    return HttpResponse("Contact US page")
+    def perform_create(self, serializer):
+        blog= Blog.objects.get(pk=self.request.data['blog_pk'])
+        comment= serializer.save()
+        blog.comments.add(comment)
+        blog.save()
+
+  
+      
