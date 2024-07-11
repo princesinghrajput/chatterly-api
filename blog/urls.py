@@ -13,7 +13,6 @@ router.register(r'blogs/(?P<blog_id>[^/]+)/comments', CommentViewSet)
 urlpatterns = [
 
     path('', include(router.urls)),
-    # path('api-token-auth/',CustomTokenAuth.as_view() )
- 
+
    
 ]
